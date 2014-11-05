@@ -3875,12 +3875,20 @@
         var options = $editor.data('options');
 
         var cmEditor, server;
+        var formToken = options['formToken'];
 
         $editor.toggleClass('codeview');
 
         var isCodeview = $editor.hasClass('codeview');
         if (isCodeview) {
-          $codable.val(dom.html($editable, true));
+          var html = dom.html($editable, true);
+          if (formToken) {
+            html = html
+              .replace(new RegExp("<!--"+formToken+"form(.*?)"+formToken+"-->"), "<form$1>")
+              .replace("<!--"+formToken+"/form"+formToken+"-->", "</form>");
+          }
+
+          $codable.val(html);
           $codable.height($editable.height());
           toolbar.deactivate($toolbar);
           popover.hide($popover);
@@ -3911,7 +3919,15 @@
             cmEditor.toTextArea();
           }
 
-          $editable.html(dom.value($codable) || dom.emptyPara);
+          var html = dom.value($codable) || dom.emptyPara;
+          if (formToken) {            
+            html = html
+              // .replace("<form>", "<!--"+formToken+"form"+formToken+"-->")//todo - use regex for replacing first form tag to avoid commenting the whole thing.
+              .replace(new RegExp("<form(.*?)>"), "<!--"+formToken+"form$1"+formToken+"-->")
+              .replace("</form>", "<!--"+formToken+"/form"+formToken+"-->");
+          }
+
+          $editable.html(html); 
           $editable.height(options.height ? $codable.height() : 'auto');
 
           toolbar.activate($toolbar);
