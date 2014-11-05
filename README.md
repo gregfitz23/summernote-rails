@@ -1,4 +1,5 @@
 # Summernote::Rails
+This fork is to allow for tokenizing form tags so that the Summernote editor can be used to add forms within other form elements.
 
 This gem was built to gemify the assets used in Summernote, the Super Simple WYSIWYG Editor on Bootstrap, for Ruby on Rails version >= 3.1.
 
