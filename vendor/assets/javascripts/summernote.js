@@ -3875,17 +3875,19 @@
         var options = $editor.data('options');
 
         var cmEditor, server;
-        var formToken = options['formToken'];
+        var unsafeElementToken = options['unsafeElementToken'];
 
         $editor.toggleClass('codeview');
 
         var isCodeview = $editor.hasClass('codeview');
         if (isCodeview) {
           var html = dom.html($editable, true);
-          if (formToken) {
+          if (unsafeElementToken) {
             html = html
-              .replace(new RegExp("<!--"+formToken+"form(.*?)"+formToken+"-->"), "<form$1>")
-              .replace("<!--"+formToken+"/form"+formToken+"-->", "</form>");
+              .replace(new RegExp("<!--"+unsafeElementToken+"form(.*?)"+unsafeElementToken+"-->"), "<form$1>")
+              .replace("<!--"+unsafeElementToken+"/form"+unsafeElementToken+"-->", "</form>")
+              .replace("<!--"+unsafeElementToken+"script", "<script")
+              .replace("</script"+unsafeElementToken+"-->", "</script>");
           }
 
           $codable.val(html);
@@ -3920,11 +3922,13 @@
           }
 
           var html = dom.value($codable) || dom.emptyPara;
-          if (formToken) {            
+          if (unsafeElementToken) {            
             html = html
-              // .replace("<form>", "<!--"+formToken+"form"+formToken+"-->")//todo - use regex for replacing first form tag to avoid commenting the whole thing.
-              .replace(new RegExp("<form(.*?)>"), "<!--"+formToken+"form$1"+formToken+"-->")
-              .replace("</form>", "<!--"+formToken+"/form"+formToken+"-->");
+              // .replace("<form>", "<!--"+unsafeElementToken+"form"+unsafeElementToken+"-->")//todo - use regex for replacing first form tag to avoid commenting the whole thing.
+              .replace(new RegExp("<form(.*?)>"), "<!--"+unsafeElementToken+"form$1"+unsafeElementToken+"-->")
+              .replace("</form>", "<!--"+unsafeElementToken+"/form"+unsafeElementToken+"-->")
+              .replace("<script", "<!--"+unsafeElementToken+"script")
+              .replace("</script>", "</script"+unsafeElementToken+"-->");
           }
 
           $editable.html(html); 
